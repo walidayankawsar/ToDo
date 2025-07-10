@@ -5,7 +5,8 @@
   </tr>
   {% for task in tasks %}
   <tr>
-    <th>{{ task.title}}</th>
+    <th>{{ task.title }}</th>
+    <td><a href="{% url 'task' task.id %}">view</a></td>
   </tr>
   {% empty %}
   <h3>no item in list</h3>
