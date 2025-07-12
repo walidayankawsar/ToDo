@@ -15,7 +15,7 @@ from .models import Task
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     redirect_authenticated_user = True
 
     def get_success_url(self):
@@ -43,13 +43,17 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     success_url = reverse_lazy('tasks')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(TaskCreate, self).form_valid(form)
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     success_url = reverse_lazy('tasks')
 
 
