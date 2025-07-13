@@ -1,0 +1,9 @@
+<p>Register</P>
+
+<form method='POST'>
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type='submit' value='Register'>
+</form>
+
+<p>Already have an account??<a href=''> Log In</a></p>
