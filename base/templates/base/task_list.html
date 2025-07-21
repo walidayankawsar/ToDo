@@ -16,6 +16,12 @@
 
 <h1>ToDo List {{color}}</h1>
 <a href = '{% url 'task-create' %}'>add task</a>
+
+<form method="GET">
+  <input type='text' name='search'>
+  <input type='submit' value='Search'
+</form>
+
 <table>
   <tr>
     <th>Item</th>
