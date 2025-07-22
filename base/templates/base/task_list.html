@@ -5,11 +5,21 @@
 <div class="header-bar"> 
   <div>
     <h1>Hello {{request.user|title}}</h1> <!-- here |title for user's first capital letter -->
-    <h3 style="margin:0">You have <i>{{count}}</i> incomplete task{{count|pluralize:"s"}}</h3> <!--"s" will be added when task number more then one-->
+    <h3 style="margin: 0">You have <i>{{count}}</i> incomplete task{{count|pluralize:"s"}}</h3> <!--"s" will be added when task number more then one-->
+    
+    {% if request.user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    {% else %}
+    <a href="{% url 'login' %}">LogIn</a>
+    {% endif %}
   </div>
+</div>
 
 
-
+<!--
 {% if request.user.is_authenticated %}
     <p>{{ request.user }}</p>
     <form action="{% url 'logout' %}" method="POST" style="display: inline;">
@@ -19,6 +29,7 @@
 {% else %}
     <a href="{% url 'login' %}">LogIn</a>
 {% endif %}
+-->
 
 
 <hr>
