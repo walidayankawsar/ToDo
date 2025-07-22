@@ -24,6 +24,8 @@
 </div>
 
 
+
+<!--
 <hr>
 
 <h1>ToDo List {{color}}</h1>
@@ -33,6 +35,27 @@
   <input type='text' name='search-area' value="{{search_input}}">
   <input type='submit' value='Search'>
 </form>
+-->
+
+
+<div class="task-item-wrapper">
+  {% for task in tasks %}
+    <div class="task-wrapper">
+      {% if task.complete %}
+        <div class="task-title">
+          <div class="task-complete-icon"></div>
+          <i><s><a href="{% url 'task-update' task.id %}"></a></s></i>
+        </div>
+      {% endif %}
+    </div>
+  {% empty %}
+  <h3>No item in list</h3>
+  {% endfor %}
+
+</div>
+
+
+
 
 <table>
   <tr>
