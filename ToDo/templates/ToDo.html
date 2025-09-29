@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List - কাজের তালিকা</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .add-todo-form {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .todo-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .todo-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .priority-select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .priority-select:focus {
+            border-color: #667eea;
+        }
+
+        .add-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-link {
+            padding: 8px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-link:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .filter-link.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .todo-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .todo-item {
+            background: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-item.completed {
+            opacity: 0.7;
+            background: rgba(200, 200, 200, 0.3);
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .todo-priority {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        .priority-low {
+            background: #51cf66;
+            color: white;
+        }
+
+        .todo-date {
+            font-size: 12px;
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .clear-completed {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .clear-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .empty-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .todo-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .todo-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .todo-list::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+
+        .todo-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.7);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-group {
+                flex-direction: column;
+            }
+            
+            .todo-input {
+                min-width: 100%;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+
+        <div class="header">
+            <h4> Hello {{user.username}}</h4>
+            <h1>📋 ToDo List</h1>
+
+            <div style="text-align: right;">
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="add-btn">Logout</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="messages">
+            <div class="message success">✅ নতুন কাজ সফলভাবে যোগ হয়েছে!</div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-number">5</span>
+                <div class="stat-label">মোট কাজ</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">2</span>
+                <div class="stat-label">সম্পূর্ণ</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">3</span>
+                <div class="stat-label">বাকি আছে</div>
+            </div>
+        </div>
+
+        <!-- Add Todo Form -->
+        <form method="post" class="add-todo-form">
+            <div class="form-group">
+                <input type="text" name="text" class="todo-input" placeholder="নতুন কাজ লিখুন..." maxlength="200" required>
+                <select name="priority" class="priority-select">
+                    <option value="low">কম গুরুত্বপূর্ণ</option>
+                    <option value="medium" selected>মাঝারি গুরুত্বপূর্ণ</option>
+                    <option value="high">অত্যন্ত গুরুত্বপূর্ণ</option>
+                </select>
+                <button type="submit" class="add-btn">➕ যোগ করুন</button>
+            </div>
+        </form>
+
+        <!-- Filter Links -->
+        <div class="filters">
+            <a href="#" class="filter-link active">সবগুলো</a>
+            <a href="#" class="filter-link">অসম্পূর্ণ</a>
+            <a href="#" class="filter-link">সম্পূর্ণ</a>
+            <a href="#" class="filter-link">গুরুত্বপূর্ণ</a>
+        </div>
+
+        <!-- Todo List -->
+        <div class="todo-list">
+            <!-- Sample Todo Items -->
+            <div class="todo-item">
+                <input type="checkbox" class="todo-checkbox">
+                <div class="todo-text">Django project setup করতে হবে</div>
+                <div class="todo-priority priority-high">গুরুত্বপূর্ণ</div>
+                <div class="todo-date">২৬ সেপ, ২০২৫ - ১০:৩০ AM</div>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+            <div class="todo-item completed">
+                <input type="checkbox" class="todo-checkbox" checked>
+                <div class="todo-text">Database design সম্পূর্ণ করা হয়েছে</div>
+                <div class="todo-priority priority-medium">মাঝারি</div>
+                <div class="todo-date">২৫ সেপ, ২০২৫ - ২:১৫ PM</div>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+            <div class="todo-item">
+                <input type="checkbox" class="todo-checkbox">
+                <div class="todo-text">Frontend template তৈরি করা</div>
+                <div class="todo-priority priority-medium">মাঝারি</div>
+                <div class="todo-date">২৬ সেপ, ২০২৫ - ৯:৪৫ AM</div>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+            <div class="todo-item completed">
+                <input type="checkbox" class="todo-checkbox" checked>
+                <div class="todo-text">CSS styling সম্পূর্ণ</div>
+                <div class="todo-priority priority-low">সাধারণ</div>
+                <div class="todo-date">২৪ সেপ, ২০২৫ - ৫:২০ PM</div>
+                <button class="delete-btn">🗑️</button>
+            </div>
+
+            <div class="todo-item">
+                <input type="checkbox" class="todo-checkbox">
+                <div class="todo-text">API endpoints তৈরি করা</div>
+                <div class="todo-priority priority-high">গুরুত্বপূর্ণ</div>
+                <div class="todo-date">২৬ সেপ, ২০২৫ - ১১:১০ AM</div>
+                <button class="delete-btn">🗑️</button>
+            </div>
+        </div>
+
+        <!-- Clear Completed Button -->
+        <div class="clear-completed">
+            <button class="clear-btn">✅ সম্পূর্ণ কাজগুলো মুছে ফেলুন</button>
+        </div>
+    </div>
+</body>
+</html>
