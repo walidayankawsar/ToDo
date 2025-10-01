@@ -116,10 +116,6 @@
   <div class="center">
     <h1>Register</h1>
 
-    {% if error %}
-      <p style="color:red; text-align:center;">{{ message }}</p>
-    {% endif %}
-
     {% if messages %}
         {% for message in messages %}
             {% if messages.tags == 'error' %}
