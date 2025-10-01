@@ -59,11 +59,15 @@ def register(request):
     return render(request, 'register.html')
 
 
+def reset(request):
+    return render(request, 'reset.html')
+
+
 @login_required
 def home(request):
     return render(request, "ToDo.html")
 
-def user_logout(request):
-    logout(request)
-    return redirect("login")
 
+def logoutview(request):
+    logout(request)
+    return redirect('login')
