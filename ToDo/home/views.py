@@ -63,6 +63,14 @@ def reset(request):
     return render(request, 'reset.html')
 
 
+def reset_message(request, reset_id):
+    return render(request, 'sent_reset_link.html')
+
+
+def new_pass(request, reset_id):
+    return render(request, 'new_password.html')
+
+
 @login_required
 def home(request):
     return render(request, "ToDo.html")
