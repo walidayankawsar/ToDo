@@ -4,6 +4,10 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from .models import PasswordReset
+from django.urls import reverse
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 def user_login(request):
     error = None   # শুরুতে error নাই
@@ -60,6 +64,40 @@ def register(request):
 
 
 def reset(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+
+        # verify if email exists
+        try:
+            user = User.objects.get(email = email)
+
+            # create a new reset id
+            new_password_reset = PasswordReset(user=user)
+            new_password_reset.save()
+
+            # create a reset url
+            pass_reset_url = reverse('newpass', kwargs={'reset_id': new_password_reset.reset_id})
+
+            # email contant
+            url_page = f'Reset your password useing the link below:\n\n\n{ pass_reset_url }'
+
+            email_message = EmailMessage(
+                'Reset your password', # email subject
+                url_page,
+                settings.EMAIL_HOST_USER, # email sender
+                [email] # email  receiver 
+            )
+
+            email_message.fail_silently = True
+            email_message.send()
+
+            return redirect('message', new_password_reset.reset_id)
+
+
+
+        except User.DoesNotExist:
+            messages.error(request, f"No User with '{email}' found")
+            return redirect('reset')
     return render(request, 'reset.html')
 
 
