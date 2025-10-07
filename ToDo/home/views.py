@@ -76,10 +76,10 @@ def reset(request):
             new_password_reset.save()
 
             # create a reset url
-            pass_reset_url = reverse('newpass', kwargs={'reset_id': new_password_reset.reset_id})
+            pass_reset_url = request.build_absolute_uri(reverse('newpass', kwargs={'reset_id': new_password_reset.reset_id}))
 
             # email contant
-            url_page = f'Reset your password useing the link below:\n\n\n localhost:8000{pass_reset_url}'
+            url_page = f'Reset your password useing the link below:\n\n\n{pass_reset_url}'
 
             email_message = EmailMessage(
                 'Reset your password', # email subject
