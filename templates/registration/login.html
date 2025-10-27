@@ -120,6 +120,10 @@
       <p style="color:red; text-align:center;">{{ error }}</p>
     {% endif %}
 
+    {% for message in messages %}
+      <li style='color: green;'>{{ message }}</li>
+    {% endfor %}
+
     <form method="POST">
       {% csrf_token %}
 
