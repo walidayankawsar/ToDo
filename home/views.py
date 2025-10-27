@@ -8,6 +8,7 @@ from .models import PasswordReset
 from django.urls import reverse
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.utils import timezone
 
 def user_login(request):
     error = None   # শুরুতে error নাই
@@ -106,6 +107,37 @@ def reset_message(request, reset_id):
 
 
 def new_pass(request, reset_id):
+    try:
+        reset_id = PasswordReset.objects.get(reset_id = reset_id)
+    except PasswordReset.DoesNotExist:
+        messages.error(request, 'invalid URL')
+        return redirect('reset')
+    
+    if request.method == "POST":
+        password_have_error = False
+        password =request.POST.get('password')
+        confirm_password =request.POST.get('confirm_password')
+
+        if password != confirm_password:
+            password_have_error = True
+            messages.error(request, 'password dose not match')
+
+        expiration_time = reset_id.created_when + timezone.timedelta(minutes=10)
+        
+        if timezone.now() > expiration_time:
+            password_have_error = True
+            messages.error(request, 'Reset link has expired')
+
+        if not password_have_error:
+            user = reset_id.user
+            user.set_password(password)
+            user.save()
+
+            reset_id.delete()
+            messages.success(request, 'reset password successfully.')
+            return redirect('login')
+        else:
+            return redirect('reset')
     return render(request, 'new_password.html')
 
 
