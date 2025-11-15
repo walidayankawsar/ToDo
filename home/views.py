@@ -168,7 +168,7 @@ def home(request):
         
     completed = Task.objects.filter(user=request.user, is_completed=True).count()
     total = Task.objects.filter(user=request.user).count()
-    remaining = completed - total
+    remaining = total - completed
 
     context = {
         "completed_task": completed,
@@ -197,7 +197,7 @@ def delete_task(request, task_id):
 @login_required
 def delete_completed_tasks(request, task_id):
     task = Task.objects.get(user=request.user, is_completed=True)
-    task.deleted()
+    task.delete()
     messages.success(request, "সম্পূর্ণ কাজগুলো মুছে ফেলা হয়েছে।")
     return redirect('home')
 
