@@ -393,23 +393,24 @@
         <!-- Stats Section -->
         <div class="stats">
             <div class="stat-card">
-                <span class="stat-number">5</span>
+                <span class="stat-number">{{ total_task }}</span>
                 <div class="stat-label">মোট কাজ</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number">2</span>
+                <span class="stat-number">{{ completed_task }}</span>
                 <div class="stat-label">সম্পূর্ণ</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number">3</span>
+                <span class="stat-number">{{ remaining_task }}</span>
                 <div class="stat-label">বাকি আছে</div>
             </div>
         </div>
 
         <!-- Add Todo Form -->
-        <form method="post" class="add-todo-form">
+        <form method="POST" class="add-todo-form">
+            {% csrf_token %}
             <div class="form-group">
-                <input type="text" name="text" class="todo-input" placeholder="নতুন কাজ লিখুন..." maxlength="200" required>
+                <input type="text" name="title" class="todo-input" placeholder="নতুন কাজ লিখুন..." maxlength="200" required>
                 <select name="priority" class="priority-select">
                     <option value="low">কম গুরুত্বপূর্ণ</option>
                     <option value="medium" selected>মাঝারি গুরুত্বপূর্ণ</option>
@@ -430,45 +431,33 @@
         <!-- Todo List -->
         <div class="todo-list">
             <!-- Sample Todo Items -->
-            <div class="todo-item">
-                <input type="checkbox" class="todo-checkbox">
-                <div class="todo-text">Django project setup করতে হবে</div>
-                <div class="todo-priority priority-high">গুরুত্বপূর্ণ</div>
-                <div class="todo-date">২৬ সেপ, ২০২৫ - ১০:৩০ AM</div>
-                <button class="delete-btn">🗑️</button>
-            </div>
+             {% for task in tasks %}
+                <div class="todo-item {% if task.is_completed %}completed{% endif %}">
+                <form action="{% url 'toggle_task' task.id %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="checkbox" class="todo-checkbox"
+                        onchange="this.form.submit()"
+                        {% if task.is_completed %}checked{% endif %}>
+                </form>
 
-            <div class="todo-item completed">
-                <input type="checkbox" class="todo-checkbox" checked>
-                <div class="todo-text">Database design সম্পূর্ণ করা হয়েছে</div>
-                <div class="todo-priority priority-medium">মাঝারি</div>
-                <div class="todo-date">২৫ সেপ, ২০২৫ - ২:১৫ PM</div>
-                <button class="delete-btn">🗑️</button>
-            </div>
-
-            <div class="todo-item">
-                <input type="checkbox" class="todo-checkbox">
-                <div class="todo-text">Frontend template তৈরি করা</div>
-                <div class="todo-priority priority-medium">মাঝারি</div>
-                <div class="todo-date">২৬ সেপ, ২০২৫ - ৯:৪৫ AM</div>
-                <button class="delete-btn">🗑️</button>
-            </div>
-
-            <div class="todo-item completed">
-                <input type="checkbox" class="todo-checkbox" checked>
-                <div class="todo-text">CSS styling সম্পূর্ণ</div>
-                <div class="todo-priority priority-low">সাধারণ</div>
-                <div class="todo-date">২৪ সেপ, ২০২৫ - ৫:২০ PM</div>
-                <button class="delete-btn">🗑️</button>
-            </div>
-
-            <div class="todo-item">
-                <input type="checkbox" class="todo-checkbox">
-                <div class="todo-text">API endpoints তৈরি করা</div>
-                <div class="todo-priority priority-high">গুরুত্বপূর্ণ</div>
-                <div class="todo-date">২৬ সেপ, ২০২৫ - ১১:১০ AM</div>
-                <button class="delete-btn">🗑️</button>
-            </div>
+                    <div class="todo-text">{{ task.title }}</div>
+                    <div class="todo-priority
+                    {% if task.priority == 'high' %}priority-high
+                    {% elif task.priority == 'medium' %}priority-medium
+                    {% else %}priority-low
+                    {% endif %}
+                    ">
+                        {{ task.get_priority_display }}
+                    </div>
+                    <div class="todo-date">{{ task.created_at|date:"d M, Y - h:i A" }}</div>
+                    <form action="{% url 'delete_task' task.id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="delete-btn">🗑️</button>
+                    </form>
+                </div>
+            {% empty %}
+                <p style="text-align: center;">No Task Found.</p>
+            {% endfor %}
         </div>
 
         <!-- Clear Completed Button -->
