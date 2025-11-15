@@ -368,11 +368,13 @@
     </style>
 </head>
 <body>
+
+
     <div class="container">
-
-
+        
+        <img src="/static/profile.png" alt='image' height='42' width='42'>
+        <h4>{{ user.get_full_name }}</h4>
         <div class="header">
-            <h4> Hello {{user.get_full_name}}</h4>
             <h1>📋 ToDo List</h1>
 
             <div style="text-align: right;">
@@ -386,9 +388,11 @@
         </div>
 
         <!-- Messages Section -->
-        <div class="messages">
-            <div class="message success">✅ নতুন কাজ সফলভাবে যোগ হয়েছে!</div>
-        </div>
+         {% for message in messages %}
+            <div class="messages">
+                <div class="message success">{{ message }}</div>
+            </div>
+        {% endfor %}
 
         <!-- Stats Section -->
         <div class="stats">
